@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>ご予約（テスト）</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* =========================================================
+    ここにGASのウェブアプリURLを貼り付けます（下のscript内）
+     ========================================================= */
+      :root {
+        --bg: #fff6f7;
+        --paper: #ffffff;
+        --ink: #4a2c2a;
+        --ink-soft: #8a6e6a;
+        --accent: #c2456b;
+        --accent-dark: #a23558;
+        --line: #eed8dc;
+        --ok: #2f7a57;
+        --ok-bg: #eaf5ef;
+        --warn-bg: #fff1d9;
+        --warn-ink: #7a4e0b;
+        --err: #b3261e;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans",
+          "Yu Gothic", "Meiryo", sans-serif;
+        font-size: 16px;
+        line-height: 1.75;
+      }
+      .wrap {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 32px 20px 56px;
+      }
+
+      header {
+        margin-bottom: 28px;
+      }
+      h1 {
+        font-size: 1.9rem;
+        line-height: 1.3;
+        margin: 0 0 6px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+      }
+
+      .notice {
+        background: var(--warn-bg);
+        color: var(--warn-ink);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 0.92rem;
+      }
+      .notice p {
+        margin: 0 0 8px;
+      }
+      .notice p:last-child {
+        margin-bottom: 0;
+      }
+      .notice a.btn-sub {
+        display: inline-block;
+        margin-top: 4px;
+      }
+
+      .panel {
+        background: var(--paper);
+        border-radius: 20px;
+        padding: 22px 20px;
+        margin-bottom: 18px;
+        border: 1px solid var(--line);
+      }
+      .panel h2 {
+        font-size: 1.05rem;
+        margin: 0 0 10px;
+      }
+
+      .env-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.92rem;
+        padding: 4px 0;
+      }
+      .env-row span:first-child {
+        color: var(--ink-soft);
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        margin: 18px 0 6px;
+        font-size: 0.95rem;
+      }
+      label:first-of-type {
+        margin-top: 0;
+      }
+      .req {
+        color: var(--accent);
+        font-size: 0.8rem;
+        margin-left: 6px;
+      }
+      input,
+      select {
+        width: 100%;
+        font: inherit;
+        color: var(--ink);
+        padding: 12px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        background: #fffcfc;
+        appearance: none;
+        -webkit-appearance: none;
+        min-height: 48px;
+      }
+      select {
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%),
+          linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+        background-position:
+          calc(100% - 20px) 50%,
+          calc(100% - 14px) 50%;
+        background-size: 6px 6px;
+        background-repeat: no-repeat;
+        padding-right: 40px;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(194, 69, 107, 0.18);
+      }
+      .hint {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        margin: 4px 0 0;
+      }
+      .field-error {
+        font-size: 0.82rem;
+        color: var(--err);
+        margin: 4px 0 0;
+        min-height: 0;
+      }
+
+      button,
+      .btn-sub {
+        font: inherit;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+      }
+      .btn-main {
+        width: 100%;
+        margin-top: 26px;
+        padding: 15px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.05rem;
+      }
+      .btn-main:active {
+        background: var(--accent-dark);
+      }
+      .btn-main:disabled {
+        opacity: 0.55;
+        cursor: wait;
+      }
+      .btn-sub {
+        padding: 9px 16px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--accent);
+        border: 1.5px solid var(--accent);
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid rgba(194, 69, 107, 0.4);
+        outline-offset: 2px;
+      }
+
+      .result {
+        margin: 10px 0 0;
+        font-size: 0.9rem;
+      }
+      .result.ok {
+        color: var(--ok);
+      }
+      .result.ng {
+        color: var(--err);
+      }
+
+      .done {
+        background: var(--ok-bg);
+        border-color: transparent;
+        text-align: center;
+      }
+      .done .id {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin: 6px 0 10px;
+        color: var(--ok);
+        word-break: break-all;
+      }
+      .done p {
+        margin: 0 0 6px;
+      }
+
+      .error-box {
+        background: #fdecea;
+        color: var(--err);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin-top: 16px;
+        font-size: 0.9rem;
+        word-break: break-all;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <h1>ご予約フォーム</h1>
+        <p class="lead">
+          動作確認用のテストページです。実際のご予約にはなりません。
+        </p>
+      </header>
+
+      <!-- アプリ内ブラウザで開かれたときの案内 -->
+      <div id="inappNotice" class="notice" hidden>
+        <p id="inappText"></p>
+        <a id="openChrome" class="btn-sub" href="#" hidden>Chromeで開く</a>
+      </div>
+
+      <!-- 利用環境（テストの記録用） -->
+      <section class="panel">
+        <h2>ご利用環境</h2>
+        <div class="env-row">
+          <span>ブラウザ</span><span id="envBrowser">-</span>
+        </div>
+        <div class="env-row">
+          <span>端末</span><span id="envDevice">-</span>
+        </div>
+        <div style="margin-top: 12px">
+          <button type="button" id="pingBtn" class="btn-sub">接続テスト</button>
+          <p id="pingResult" class="result" hidden></p>
+        </div>
+      </section>
+
+      <!-- 予約フォーム -->
+      <form id="form" class="panel" novalidate>
+        <label for="name">お名前<span class="req">必須</span></label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          autocomplete="name"
+          placeholder="山田 花子"
+          maxlength="50"
+        />
+        <p class="field-error" data-for="name"></p>
+
+        <label for="phone">電話番号<span class="req">必須</span></label>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder="09012345678"
+          maxlength="20"
+        />
+        <p class="field-error" data-for="phone"></p>
+
+        <label for="item">商品<span class="req">必須</span></label>
+        <select id="item" name="item">
+          <option value="">選択してください</option>
+          <option>いちごのショートケーキ</option>
+          <option>ガトーショコラ</option>
+          <option>ベイクドチーズケーキ</option>
+        </select>
+        <p class="field-error" data-for="item"></p>
+
+        <label for="date">受取日<span class="req">必須</span></label>
+        <input id="date" name="date" type="date" />
+        <p class="hint">明日以降の日付を選べます</p>
+        <p class="field-error" data-for="date"></p>
+
+        <button type="submit" id="submitBtn" class="btn-main">予約する</button>
+        <div id="errorBox" class="error-box" hidden></div>
+      </form>
+
+      <!-- 完了画面 -->
+      <section id="done" class="panel done" hidden>
+        <p>ご予約を受け付けました</p>
+        <p class="id" id="doneId"></p>
+        <p style="font-size: 0.9rem">
+          予約番号はスプレッドシートにも記録されています。
+        </p>
+        <button
+          type="button"
+          id="againBtn"
+          class="btn-sub"
+          style="margin-top: 12px"
+        >
+          もう一度テストする
+        </button>
+      </section>
+    </main>
+
+    <script>
+      // ★★★ ここにGASのウェブアプリURL（…/exec で終わるもの）を貼り付けてください ★★★
+      const GAS_URL =
+        "https://script.google.com/macros/s/AKfycbyWYRVEVKqX8vhcsN_Qm8qcZAcbUWH403MAYI7AyCBGYX3P646x73Ymp4BS-dAOGTJfbg/exec";
+
+      const TIMEOUT_MS = 20000;
+      const ua = navigator.userAgent;
+
+      // ---------- 利用環境の判定 ----------
+      function detectBrowser() {
+        if (/Instagram/i.test(ua)) return "Instagram";
+        if (/FBAN|FBAV|FB_IAB/i.test(ua)) return "Facebook";
+        if (/ Line\//i.test(ua)) return "LINE";
+        if (/CriOS/.test(ua)) return "Chrome";
+        if (/EdgA|EdgiOS|Edg\//.test(ua)) return "Edge";
+        if (/Chrome/.test(ua)) return "Chrome";
+        if (/Safari/.test(ua)) return "Safari";
+        return "その他";
+      }
+      const isIOS =
+        /iPhone|iPad|iPod/i.test(ua) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+      const browser = detectBrowser();
+      const device = isIOS
+        ? "iPhone / iPad"
+        : isAndroid
+          ? "Android"
+          : "PC・その他";
+      const isInApp = ["Instagram", "Facebook", "LINE"].includes(browser);
+
+      document.getElementById("envBrowser").textContent =
+        browser + (isInApp ? "（アプリ内ブラウザ）" : "");
+      document.getElementById("envDevice").textContent = device;
+
+      // アプリ内ブラウザ向けの案内
+      if (isInApp) {
+        const notice = document.getElementById("inappNotice");
+        const text = document.getElementById("inappText");
+        notice.hidden = false;
+        if (isAndroid) {
+          text.textContent =
+            "うまく表示・送信できない場合は、Chromeで開いてください。";
+          const link = document.getElementById("openChrome");
+          link.href =
+            "intent://" +
+            location.host +
+            location.pathname +
+            location.search +
+            "#Intent;scheme=https;package=com.android.chrome;end";
+          link.hidden = false;
+        } else {
+          text.textContent =
+            "うまく表示・送信できない場合は、画面右上の「…」から「外部ブラウザで開く」を選んでください。";
+        }
+      }
+
+      // 受取日は明日以降
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById("date").min =
+        tomorrow.toLocaleDateString("sv-SE"); // YYYY-MM-DD
+
+      // ---------- 通信 ----------
+      function checkUrl() {
+        if (!GAS_URL.startsWith("https://script.google.com/")) {
+          throw new Error(
+            "GAS_URLが設定されていません。index.html の GAS_URL にウェブアプリのURLを貼り付けてください。",
+          );
+        }
+      }
+
+      async function request(options) {
+        checkUrl();
+        const ctrl = new AbortController();
+        const timer = setTimeout(function () {
+          ctrl.abort();
+        }, TIMEOUT_MS);
+        try {
+          const res = await fetch(
+            GAS_URL,
+            Object.assign({ redirect: "follow", signal: ctrl.signal }, options),
+          );
+          if (!res.ok)
+            throw new Error(
+              "サーバーの応答が正常ではありません（" + res.status + "）",
+            );
+          return await res.json();
+        } catch (err) {
+          if (err.name === "AbortError")
+            throw new Error(
+              "通信がタイムアウトしました。電波の良い場所で再度お試しください。",
+            );
+          throw err;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      // 接続テスト（GET）
+      document
+        .getElementById("pingBtn")
+        .addEventListener("click", async function () {
+          const out = document.getElementById("pingResult");
+          out.hidden = false;
+          out.className = "result";
+          out.textContent = "確認しています…";
+          try {
+            const data = await request({ method: "GET" });
+            out.className = "result ok";
+            out.textContent = data.message + "（" + data.time + "）";
+          } catch (err) {
+            out.className = "result ng";
+            out.textContent = "接続できませんでした：" + err.message;
+          }
+        });
+
+      // ---------- 入力チェック ----------
+      function validate(values) {
+        const errors = {};
+        if (!values.name.trim()) errors.name = "お名前を入力してください";
+        const digits = values.phone.replace(/[-ー－\s]/g, "");
+        if (!digits) errors.phone = "電話番号を入力してください";
+        else if (!/^0\d{9,10}$/.test(digits))
+          errors.phone = "電話番号は0から始まる10〜11桁で入力してください";
+        if (!values.item) errors.item = "商品を選択してください";
+        if (!values.date) errors.date = "受取日を選択してください";
+        else if (values.date < document.getElementById("date").min)
+          errors.date = "明日以降の日付を選択してください";
+        return errors;
+      }
+
+      function showErrors(errors) {
+        document.querySelectorAll(".field-error").forEach(function (el) {
+          el.textContent = errors[el.dataset.for] || "";
+        });
+      }
+
+      // ---------- 予約送信（POST） ----------
+      const form = document.getElementById("form");
+      const submitBtn = document.getElementById("submitBtn");
+      const errorBox = document.getElementById("errorBox");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        errorBox.hidden = true;
+
+        const values = {
+          name: form.name.value,
+          phone: form.phone.value,
+          item: form.item.value,
+          date: form.date.value,
+        };
+        const errors = validate(values);
+        showErrors(errors);
+        if (Object.keys(errors).length > 0) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "送信しています…";
+
+        try {
+          // Content-Type を指定しない（text/plain になる）ことで、GASへ送信できる
+          const data = await request({
+            method: "POST",
+            body: JSON.stringify(
+              Object.assign({}, values, {
+                phone: values.phone.replace(/[-ー－\s]/g, ""),
+                browser: browser,
+                device: device,
+                userAgent: ua,
+              }),
+            ),
+          });
+          if (!data.ok)
+            throw new Error(data.error || "予約を保存できませんでした");
+
+          document.getElementById("doneId").textContent = data.reservationId;
+          form.hidden = true;
+          document.getElementById("done").hidden = false;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (err) {
+          errorBox.textContent = "送信できませんでした：" + err.message;
+          errorBox.hidden = false;
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "予約する";
+        }
+      });
+
+      document
+        .getElementById("againBtn")
+        .addEventListener("click", function () {
+          form.reset();
+          showErrors({});
+          document.getElementById("done").hidden = true;
+          form.hidden = false;
+        });
+    </script>
+  </body>
+</html>
